@@ -208,7 +208,8 @@ export function MeetPrep() {
     localStorage.setItem('meetprep-checklist', JSON.stringify(toSave))
   }, [checklist])
 
-  useEffect(() => {
+  // Handler functions for explicit calculation
+  const handleCalculateTaper = () => {
     if (meetDate && squat1RM && bench1RM && deadlift1RM) {
       const plan = generateTaperPlan(
         new Date(meetDate),
@@ -217,19 +218,17 @@ export function MeetPrep() {
         parseFloat(deadlift1RM)
       )
       setTaperPlan(plan)
-    } else {
-      setTaperPlan([])
     }
-  }, [meetDate, squat1RM, bench1RM, deadlift1RM])
+  }
 
-  useEffect(() => {
+  const handleCalculateWarmup = () => {
     if (openerWeight) {
       const plan = generateWarmup(parseFloat(openerWeight))
       setWarmupPlan(plan)
     } else {
       setWarmupPlan([])
     }
-  }, [openerWeight])
+  }
 
   const toggleChecklistItem = (id: string) => {
     setChecklist(prev => prev.map(item =>
@@ -244,11 +243,13 @@ export function MeetPrep() {
   }
 
   const renderTaperPlan = () => {
+    const allFieldsFilled = meetDate && squat1RM && bench1RM && deadlift1RM
+
     if (taperPlan.length === 0) {
       return (
         <div className="bg-gray-50 rounded-lg p-8 text-center">
-          <p className="text-gray-500 mb-4">Completa los datos arriba para generar tu plan de taper</p>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+          <p className="text-gray-500 mb-4">Completa los datos y pulsa <strong>Calcular Plan</strong> para generar tu taper</p>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-2xl mx-auto mb-4">
             <input
               type="date"
               value={meetDate}
@@ -280,6 +281,13 @@ export function MeetPrep() {
               className="px-3 py-2 border border-gray-300 rounded-md"
             />
           </div>
+          <button
+            onClick={handleCalculateTaper}
+            disabled={!allFieldsFilled}
+            className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Calcular Plan
+          </button>
         </div>
       )
     }
@@ -387,21 +395,30 @@ export function MeetPrep() {
   }
 
   const renderWarmup = () => {
-    if (!openerWeight || warmupPlan.length === 0) {
+    if (warmupPlan.length === 0) {
       return (
         <div className="bg-gray-50 rounded-lg p-8 text-center">
           <h4 className="font-semibold text-gray-900 mb-4">Calculadora de Calentamiento</h4>
-          <p className="text-gray-500 mb-6">Ingresa tu peso de apertura (primer intento) para generar la progresión</p>
+          <p className="text-gray-500 mb-6">Ingresa tu peso de apertura (primer intento) y pulsa <strong>Calcular Calentamiento</strong></p>
           <div className="max-w-xs mx-auto">
-            <input
-              type="number"
-              step="0.5"
-              min="0"
-              placeholder="Peso de apertura (kg)"
-              value={openerWeight}
-              onChange={(e) => setOpenerWeight(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
+            <div className="flex gap-2">
+              <input
+                type="number"
+                step="0.5"
+                min="0"
+                placeholder="Peso de apertura (kg)"
+                value={openerWeight}
+                onChange={(e) => setOpenerWeight(e.target.value)}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md"
+              />
+              <button
+                onClick={handleCalculateWarmup}
+                disabled={!openerWeight}
+                className="px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Calcular
+              </button>
+            </div>
             <p className="text-xs text-gray-400 mt-2">Ej: Si tu 1RM es 180kg y vas a abrir con 160kg, ingresa 160</p>
           </div>
         </div>
@@ -418,6 +435,12 @@ export function MeetPrep() {
               <h4 className="font-semibold text-purple-900">Progresión de Calentamiento</h4>
               <p className="text-sm text-purple-700">Apertura: {openerWeight}kg • Total sets: {warmupPlan.length} • Volumen aprox: {totalVolume}kg</p>
             </div>
+            <button
+              onClick={handleCalculateWarmup}
+              className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+            >
+              Recalcular
+            </button>
           </div>
         </div>
 

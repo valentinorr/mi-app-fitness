@@ -56,7 +56,7 @@ export function LoginRegister() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6" data-testid="login-form">
           {isRegister && (
             <div>
               <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">

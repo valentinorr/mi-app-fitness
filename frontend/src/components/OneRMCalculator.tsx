@@ -89,7 +89,7 @@ export function OneRMCalculator() {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Calculadora de 1RM</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5" data-testid="onerm-form">
           <div>
             <label htmlFor="exerciseName" className="block text-sm font-medium text-gray-700 mb-1">
               Nombre del ejercicio *
