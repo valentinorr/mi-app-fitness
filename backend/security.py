@@ -1,65 +1,50 @@
-"""Lógica de autenticación y seguridad."""
+"""Utilidades de seguridad y autenticación (sin lógica de BD)."""
 
 from datetime import datetime, timedelta
 from typing import Annotated, Optional
 
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
 from database import get_db
 from models import User
+from repositories.user_repository import UserRepository
 from schemas import TokenData
 
 SECRET_KEY = "dev-secret-key-change-in-production"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verificar contraseña en texto plano contra hash."""
     return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password: str) -> str:
+    """Generar hash bcrypt de contraseña."""
     return pwd_context.hash(password)
 
 
-def get_user_by_email(db: Session, email: str) -> Optional[User]:
-    return db.query(User).filter(User.email == email).first()
-
-
-def create_user(db: Session, user_data) -> User:
-    hashed_password = get_password_hash(user_data.password)
-    db_user = User(email=user_data.email, hashed_password=hashed_password, full_name=user_data.full_name)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
-
-
-def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
-    user = get_user_by_email(db, email)
-    if not user or not verify_password(password, user.hashed_password):
-        return None
-    return user
-
-
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    """Crear token JWT de acceso."""
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)],
-    db: Annotated[Session, Depends(get_db)]
-) -> User:
+def get_current_user_from_token(token: str, db: Session) -> User:
+    """
+    Obtener usuario actual desde token JWT.
+    Esta función es usada por el AuthService, no directamente por routers.
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="No se pudieron validar las credenciales",
@@ -73,7 +58,20 @@ async def get_current_user(
         token_data = TokenData(email=email)
     except JWTError:
         raise credentials_exception
-    user = get_user_by_email(db, token_data.email)
+
+    user_repo = UserRepository(db)
+    user = user_repo.get_by_email(token_data.email)
     if user is None:
         raise credentials_exception
     return user
+
+
+async def get_current_user(
+    token: Annotated[str, Depends(oauth2_scheme)],
+    db: Annotated[Session, Depends(get_db)],
+) -> User:
+    """
+    Dependencia FastAPI para obtener el usuario actual.
+    Usada por routers que necesitan autenticación.
+    """
+    return get_current_user_from_token(token, db)

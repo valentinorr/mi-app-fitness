@@ -7,37 +7,48 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import User
 from schemas import Token, UserCreate, UserResponse
-from security import (
-    authenticate_user,
-    create_access_token,
-    create_user,
-    get_current_user,
-    get_user_by_email,
-)
+from security import oauth2_scheme
+from services.auth_service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
+def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
+    """Dependencia para obtener el servicio de autenticación."""
+    return AuthService(db)
+
+
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def register(user: UserCreate, db: Session = Depends(get_db)):
+def register(user: UserCreate, auth_service: AuthService = Depends(get_auth_service)):
     """Registrar un nuevo usuario"""
-    if get_user_by_email(db, user.email):
-        raise HTTPException(status_code=400, detail="El email ya está registrado")
-    return create_user(db, user)
+    try:
+        return auth_service.register_user(user.email, user.password, user.full_name)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.post("/login", response_model=Token)
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    auth_service: AuthService = Depends(get_auth_service),
+):
     """Login y obtención de token JWT"""
-    user = authenticate_user(db, form_data.username, form_data.password)
-    if not user:
+    token_data = auth_service.authenticate(form_data.username, form_data.password)
+    if not token_data:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Email o contraseña incorrectos",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token = create_access_token(data={"sub": user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return token_data
+
+
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    auth_service: AuthService = Depends(get_auth_service),
+) -> User:
+    """Obtener usuario actual desde token (dependencia reutilizable)."""
+    return auth_service.get_user_by_token(token)
 
 
 @router.get("/me", response_model=UserResponse)
