@@ -1,5 +1,6 @@
 """Utilidades de seguridad y autenticación (sin lógica de BD)."""
 
+import os
 from datetime import datetime, timedelta
 from typing import Annotated, Optional
 
@@ -14,9 +15,10 @@ from models import User
 from repositories.user_repository import UserRepository
 from schemas import TokenData
 
-SECRET_KEY = "dev-secret-key-change-in-production"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+# Configuración desde variables de entorno
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
@@ -28,7 +30,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def get_password_hash(password: str) -> str:
-    """Generar hash bcrypt de contraseña."""
+    """Generar hash de contraseña."""
     return pwd_context.hash(password)
 
 

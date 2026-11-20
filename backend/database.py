@@ -1,11 +1,15 @@
 """Configuración de base de datos SQLAlchemy."""
 
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker, Session
 
-DATABASE_URL = "sqlite:///./fitness.db"
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./fitness.db")
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+# Para SQLite en producción (Render), necesitamos check_same_thread=False
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
