@@ -24,6 +24,19 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# CORS middleware - IMPORTANTE: configurar antes de los routers
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",           # Desarrollo local Vite
+        "http://127.0.0.1:5173",           # Alternativa localhost
+        "https://mi-app-fitness.vercel.app",  # Cambia por tu dominio Vercel real
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Incluir routers
 app.include_router(auth.router)
 app.include_router(workouts.router)
