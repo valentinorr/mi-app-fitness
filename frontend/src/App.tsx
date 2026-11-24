@@ -11,7 +11,21 @@ import { LoginRegister } from './components/LoginRegister'
 import { useState } from 'react'
 
 // Definición de categorías y sus vistas
-const NAV_CATEGORIES = [
+// Tipamos explícitamente views como array de objetos con id: string para evitar inferencia estrecha
+interface NavView {
+  id: string
+  label: string
+  component: React.ComponentType<any>
+}
+
+interface NavCategory {
+  id: string
+  label: string
+  icon: string
+  views: NavView[]
+}
+
+const NAV_CATEGORIES: NavCategory[] = [
   {
     id: 'main',
     label: 'Principal',
@@ -55,9 +69,9 @@ const NAV_CATEGORIES = [
       { id: 'teamsports', label: 'Monitoreo Equipo', component: TeamSports },
     ],
   },
-] as const
+]
 
-type ViewId = typeof NAV_CATEGORIES[number]['views'][number]['id']
+type ViewId = string
 
 function App() {
   const { user, loading, logout, isAuthenticated } = useAuth()
