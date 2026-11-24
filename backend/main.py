@@ -30,7 +30,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",           # Desarrollo local Vite
         "http://127.0.0.1:5173",           # Alternativa localhost
-        "https://mi-app-fitness.vercel.app",  # Cambia por tu dominio Vercel real
+        "https://mi-app-fitness-abli-olive.vercel.app",  # Cambia por tu dominio Vercel real
     ],
     allow_credentials=True,
     allow_methods=["*"],
