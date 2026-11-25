@@ -3,7 +3,7 @@ import { api } from '../api/client'
 import type { WorkoutSessionCreate, WorkoutSetCreate } from '../types'
 
 interface SetFormData extends WorkoutSetCreate {
-  tempId: number
+  id: string // ID único estable para React keys
 }
 
 // Tabla RPE simple para ajuste (basada en RTS)
@@ -41,25 +41,32 @@ const calculateRPEAdjusted1RM = (weight: number, reps: number, rpe?: number): nu
   return epley1RM / percentage
 }
 
+// Genera ID único (usa crypto.randomUUID si está disponible, fallback a timestamp+random)
+const generateId = (): string => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+}
+
 export function LogWorkout() {
-  const [sets, setSets] = useState<SetFormData[]>([{ tempId: 1, exercise_name: '', weight: 0, reps: 0, set_order: 0 }])
+  const [sets, setSets] = useState<SetFormData[]>(() => [{ id: generateId(), exercise_name: '', weight: 0, reps: 0, set_order: 0 }])
   const [notes, setNotes] = useState('')
   const [date, setDate] = useState(new Date().toISOString().slice(0, 16))
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-  let nextTempId = 2
 
   const addSet = () => {
-    setSets((prev) => [...prev, { tempId: nextTempId++, exercise_name: '', weight: 0, reps: 0, set_order: prev.length }])
+    setSets((prev) => [...prev, { id: generateId(), exercise_name: '', weight: 0, reps: 0, set_order: prev.length }])
   }
 
-  const removeSet = (tempId: number) => {
+  const removeSet = (id: string) => {
     if (sets.length <= 1) return
-    setSets((prev) => prev.filter((s) => s.tempId !== tempId).map((s, i) => ({ ...s, set_order: i })))
+    setSets((prev) => prev.filter((s) => s.id !== id).map((s, i) => ({ ...s, set_order: i })))
   }
 
-  const updateSet = (tempId: number, field: keyof WorkoutSetCreate, value: string | number) => {
-    setSets((prev) => prev.map((s) => (s.tempId === tempId ? { ...s, [field]: value } : s)))
+  const updateSet = (id: string, field: keyof WorkoutSetCreate, value: string | number) => {
+    setSets((prev) => prev.map((s) => (s.id === id ? { ...s, [field]: value } : s)))
   }
 
   const handleSubmit = async (e: FormEvent) => {
@@ -82,12 +89,12 @@ export function LogWorkout() {
       const payload: WorkoutSessionCreate = {
         date: new Date(date).toISOString(),
         notes: notes || undefined,
-        sets: validSets.map(({ tempId, ...rest }) => rest),
+        sets: validSets.map(({ id, ...rest }) => rest),
       }
       await api.createWorkout(payload)
       setMessage({ type: 'success', text: '¡Entrenamiento guardado!' })
       // Reset form
-      setSets([{ tempId: nextTempId++, exercise_name: '', weight: 0, reps: 0, set_order: 0 }])
+      setSets([{ id: generateId(), exercise_name: '', weight: 0, reps: 0, set_order: 0 }])
       setNotes('')
       setDate(new Date().toISOString().slice(0, 16))
       // Trigger dashboard refresh (recargar página simple para MVP)
@@ -152,13 +159,13 @@ export function LogWorkout() {
 
             <div className="space-y-3">
               {sets.map((set) => (
-                <div key={set.tempId} className="grid grid-cols-1 sm:grid-cols-6 gap-3 items-end p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div key={set.id} className="grid grid-cols-1 sm:grid-cols-6 gap-3 items-end p-4 bg-gray-50 rounded-lg border border-gray-200">
                   <div className="sm:col-span-2">
                     <label className="block text-xs font-medium text-gray-500 mb-1">Ejercicio *</label>
                     <input
                       type="text"
                       value={set.exercise_name}
-                      onChange={(e) => updateSet(set.tempId, 'exercise_name', e.target.value)}
+                      onChange={(e) => updateSet(set.id, 'exercise_name', e.target.value)}
                       placeholder="Ej: Sentadilla, Press banca"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
@@ -170,7 +177,7 @@ export function LogWorkout() {
                       step="0.5"
                       min="0"
                       value={set.weight}
-                      onChange={(e) => updateSet(set.tempId, 'weight', parseFloat(e.target.value) || 0)}
+                      onChange={(e) => updateSet(set.id, 'weight', parseFloat(e.target.value) || 0)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     {set.weight > 0 && set.reps > 0 && (
@@ -193,7 +200,7 @@ export function LogWorkout() {
                       min="1"
                       max="100"
                       value={set.reps}
-                      onChange={(e) => updateSet(set.tempId, 'reps', parseInt(e.target.value) || 0)}
+                      onChange={(e) => updateSet(set.id, 'reps', parseInt(e.target.value) || 0)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
@@ -207,7 +214,7 @@ export function LogWorkout() {
                       value={set.rpe !== undefined ? set.rpe : ''}
                       onChange={(e) => {
                         const val = e.target.value
-                        updateSet(set.tempId, 'rpe', val ? parseFloat(val) : undefined as unknown as string | number)
+                        updateSet(set.id, 'rpe', val ? parseFloat(val) : undefined as unknown as string | number)
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
@@ -215,7 +222,7 @@ export function LogWorkout() {
                   <div className="flex items-end">
                     <button
                       type="button"
-                      onClick={() => removeSet(set.tempId)}
+                      onClick={() => removeSet(set.id)}
                       disabled={sets.length <= 1}
                       className="text-red-500 hover:text-red-700 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
