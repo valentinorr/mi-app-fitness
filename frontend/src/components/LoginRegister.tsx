@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useRef } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 
 export function LoginRegister() {
@@ -7,24 +7,18 @@ export function LoginRegister() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const [serverError, setServerError] = useState<string | null>(null)
+  const formRef = useRef<HTMLFormElement>(null)
+  const errorDialogRef = useRef<HTMLDialogElement>(null)
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setError(null)
+    setServerError(null)
 
-    if (!email || !password) {
-      setError('Email y contraseña son obligatorios')
-      return
-    }
-
-    if (isRegister && !fullName.trim()) {
-      setError('El nombre es obligatorio para registrar')
-      return
-    }
-
-    if (password.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres')
+    const form = e.currentTarget
+    // Let browser native validation run first
+    if (!form.checkValidity()) {
+      form.reportValidity()
       return
     }
 
@@ -36,13 +30,26 @@ export function LoginRegister() {
       }
     } catch (err: any) {
       const msg = err.response?.data?.detail || 'Error de autenticación'
-      setError(Array.isArray(msg) ? msg[0]?.msg || msg : msg)
+      setServerError(Array.isArray(msg) ? msg[0]?.msg || msg : msg)
+      errorDialogRef.current?.showModal()
     }
+  }
+
+  const handleSwitchMode = () => {
+    setIsRegister((prev) => !prev)
+    setServerError(null)
+    // Reset form validation state
+    formRef.current?.reset()
+  }
+
+  const closeErrorDialog = () => {
+    errorDialogRef.current?.close()
+    setServerError(null)
   }
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-sm border border-gray-100">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900">Data Based Training</h1>
           <p className="mt-2 text-gray-600">
@@ -50,13 +57,13 @@ export function LoginRegister() {
           </p>
         </div>
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6" data-testid="login-form">
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          className="space-y-6"
+          data-testid="login-form"
+          noValidate
+        >
           {isRegister && (
             <div>
               <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -69,7 +76,9 @@ export function LoginRegister() {
                 onChange={(e) => setFullName(e.target.value)}
                 required
                 autoComplete="name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                minLength={2}
+                maxLength={100}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder:text-gray-400"
                 placeholder="Tu nombre"
               />
             </div>
@@ -86,7 +95,7 @@ export function LoginRegister() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete={isRegister ? 'email' : 'username'}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder:text-gray-400"
               placeholder="tu@email.com"
             />
           </div>
@@ -103,7 +112,7 @@ export function LoginRegister() {
               required
               autoComplete={isRegister ? 'new-password' : 'current-password'}
               minLength={8}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder:text-gray-400"
               placeholder="Mínimo 8 caracteres"
             />
           </div>
@@ -111,7 +120,7 @@ export function LoginRegister() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? 'Cargando...' : isRegister ? 'Registrarse' : 'Iniciar sesión'}
           </button>
@@ -123,7 +132,7 @@ export function LoginRegister() {
               ¿Ya tienes cuenta?{' '}
               <button
                 type="button"
-                onClick={() => setIsRegister(false)}
+                onClick={handleSwitchMode}
                 className="text-blue-600 hover:text-blue-700 font-medium"
               >
                 Inicia sesión
@@ -134,7 +143,7 @@ export function LoginRegister() {
               ¿No tienes cuenta?{' '}
               <button
                 type="button"
-                onClick={() => setIsRegister(true)}
+                onClick={handleSwitchMode}
                 className="text-blue-600 hover:text-blue-700 font-medium"
               >
                 Regístrate
@@ -142,6 +151,58 @@ export function LoginRegister() {
             </span>
           )}
         </div>
+
+        {/* Native <dialog> for server errors */}
+        <dialog
+          ref={errorDialogRef}
+          className="border-none rounded-xl shadow-xl p-0 max-w-sm"
+          style={{ background: 'white' }}
+        >
+          <div className="p-4">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+                <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-gray-900">Error</h3>
+                <p className="mt-1 text-sm text-gray-600">{serverError}</p>
+              </div>
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button
+                type="button"
+                onClick={closeErrorDialog}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                Entendido
+              </button>
+            </div>
+          </div>
+          <form method="dialog" className="hidden">
+            <button type="submit" value="cancel">Cancel</button>
+          </form>
+        </dialog>
+
+        <style>{`
+          /* Native validation styling with :user-invalid */
+          input:user-invalid {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+          }
+
+          input:user-invalid:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+          }
+
+          /* Dialog backdrop styling */
+          dialog::backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+          }
+        `}</style>
       </div>
     </div>
   )
