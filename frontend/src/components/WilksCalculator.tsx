@@ -1,4 +1,5 @@
 import { useState, FormEvent } from 'react'
+import { Mars, Venus } from 'lucide-react'
 
 // Coeficientes oficiales de Wilks (versión 2020)
 // Fuente: IPF / World Powerlifting Federation
@@ -205,7 +206,7 @@ export function WilksCalculator() {
           {result && (
             <div className={`bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 rounded-lg p-6 space-y-4 ${getWilksClass(result.wilksPoints)}`}>
               <div className="text-center">
-                <p className="text-sm font-medium text-purple-700 uppercase tracking-wider">Puntos Wilks</p>
+                <p className="text-sm font-medium text-purple-700">Puntos Wilks</p>
                 <p className="text-5xl font-bold text-purple-900">{result.wilksPoints.toFixed(1)}</p>
                 <p className="text-sm text-purple-600">Wilks Points</p>
               </div>
@@ -224,8 +225,14 @@ export function WilksCalculator() {
                   <p className="text-xs text-purple-600">Total Levantado</p>
                 </div>
                 <div className="bg-white/50 rounded-lg p-3">
-                  <p className="text-2xl font-bold text-purple-900">{result.sex === 'male' ? '♂' : '♀'}</p>
-                  <p className="text-xs text-purple-600">{result.sex === 'male' ? 'Masculino' : 'Femenino'}</p>
+                  <div className="flex justify-center mb-1">
+                    {result.sex === 'male' ? (
+                      <Mars className="w-8 h-8 text-purple-900" aria-hidden="true" />
+                    ) : (
+                      <Venus className="w-8 h-8 text-purple-900" aria-hidden="true" />
+                    )}
+                  </div>
+                  <p className="text-xs text-purple-600 text-center">{result.sex === 'male' ? 'Masculino' : 'Femenino'}</p>
                 </div>
               </div>
 

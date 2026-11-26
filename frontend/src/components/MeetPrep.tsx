@@ -433,7 +433,11 @@ export function MeetPrep() {
           <div className="flex items-center justify-between">
             <div>
               <h4 className="font-semibold text-purple-900">Progresión de Calentamiento</h4>
-              <p className="text-sm text-purple-700">Apertura: {openerWeight}kg • Total sets: {warmupPlan.length} • Volumen aprox: {totalVolume}kg</p>
+              <div className="flex flex-wrap gap-4 mt-1 text-sm text-purple-700">
+                <span>Apertura: {openerWeight}kg</span>
+                <span>Total sets: {warmupPlan.length}</span>
+                <span>Volumen aprox: {totalVolume}kg</span>
+              </div>
             </div>
             <button
               onClick={handleCalculateWarmup}

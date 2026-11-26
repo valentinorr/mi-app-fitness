@@ -1,4 +1,5 @@
 import { useState, FormEvent } from 'react'
+import { Check, AlertTriangle, Lightbulb } from 'lucide-react'
 
 interface AttemptPlan {
   opener: number
@@ -141,12 +142,12 @@ export function AttemptSelector() {
               <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                 <h4 className="font-medium text-gray-900 mb-3">Consejos para el día de la competencia</h4>
                 <ul className="space-y-2 text-sm text-gray-600">
-                  <li className="flex items-start gap-2"><span className="text-green-600">✓</span> El <strong>apertura</strong> debe ser un peso que puedas hacer con seguridad incluso en un mal día (2-3 reps en el gym).</li>
-                  <li className="flex items-start gap-2"><span className="text-blue-600">✓</span> El <strong>segundo</strong> te acerca a tu mejor marca de entrenamiento.</li>
-                  <li className="flex items-start gap-2"><span className="text-purple-600">✓</span> El <strong>tercero</strong> es para romper tu PR. Si fallas el 2do, puedes repetirlo o subir poco.</li>
-                  <li className="flex items-start gap-2"><span className="text-orange-600">⚠</span> Recuerda: <strong>solo 3 intentos por levantamiento</strong>. No hay 4to intento.</li>
-                  <li className="flex items-start gap-2"><span className="text-orange-600">⚠</span> Los pesos se redondean a <strong>múltiplos de 2.5 kg</strong> (regla IPF).</li>
-                  <li className="flex items-start gap-2"><span className="text-gray-600">💡</span> Ajusta los porcentajes según tu experiencia: novatos más conservadores (88-90%), élites más agresivos (93-95% apertura).</li>
+                  <li className="flex items-start gap-2"><Check className="w-5 h-5 text-green-600 flex-shrink-0" aria-hidden="true" /> El <strong>apertura</strong> debe ser un peso que puedas hacer con seguridad incluso en un mal día (2-3 reps en el gym).</li>
+                  <li className="flex items-start gap-2"><Check className="w-5 h-5 text-blue-600 flex-shrink-0" aria-hidden="true" /> El <strong>segundo</strong> te acerca a tu mejor marca de entrenamiento.</li>
+                  <li className="flex items-start gap-2"><Check className="w-5 h-5 text-purple-600 flex-shrink-0" aria-hidden="true" /> El <strong>tercero</strong> es para romper tu PR. Si fallas el 2do, puedes repetirlo o subir poco.</li>
+                  <li className="flex items-start gap-2"><AlertTriangle className="w-5 h-5 text-orange-600 flex-shrink-0" aria-hidden="true" /> Recuerda: <strong>solo 3 intentos por levantamiento</strong>. No hay 4to intento.</li>
+                  <li className="flex items-start gap-2"><AlertTriangle className="w-5 h-5 text-orange-600 flex-shrink-0" aria-hidden="true" /> Los pesos se redondean a <strong>múltiplos de 2.5 kg</strong> (regla IPF).</li>
+                  <li className="flex items-start gap-2"><Lightbulb className="w-5 h-5 text-gray-600 flex-shrink-0" aria-hidden="true" /> Ajusta los porcentajes según tu experiencia: novatos más conservadores (88-90%), élites más agresivos (93-95% apertura).</li>
                 </ul>
               </div>
 

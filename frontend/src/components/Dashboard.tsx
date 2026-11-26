@@ -27,7 +27,7 @@ interface KPICardProps {
 
 function KPICard({ title, value, subtitle, icon, bgColor }: KPICardProps) {
   return (
-    <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-5 transition-all hover:shadow-md`}>
+    <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-5 transition-shadow hover:shadow-md`}>
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-gray-500 mb-1">{title}</p>
@@ -44,7 +44,7 @@ function KPICard({ title, value, subtitle, icon, bgColor }: KPICardProps) {
 
 function MetricIcon() {
   return (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2z" />
     </svg>
   )
@@ -52,7 +52,7 @@ function MetricIcon() {
 
 function SessionIcon() {
   return (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
     </svg>
   )
@@ -60,7 +60,7 @@ function SessionIcon() {
 
 function ReadinessIcon() {
   return (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3m4 7h-4m4 7h-4m-9 4V3m4 7h-4m4 7h-4M10 20v-3m4 0v-3m4 0v-3" />
     </svg>
   )
@@ -68,7 +68,7 @@ function ReadinessIcon() {
 
 function OneRMIcon() {
   return (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
   )
@@ -234,7 +234,7 @@ export function Dashboard() {
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#fff',
+                  backgroundColor: 'white',
                   border: '1px solid #e2e8f0',
                   borderRadius: '10px',
                   boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
@@ -249,7 +249,7 @@ export function Dashboard() {
                 stroke="#3b82f6"
                 strokeWidth={2.5}
                 dot={false}
-                activeDot={{ r: 6, strokeWidth: 2, stroke: '#3b82f6', fill: '#fff' }}
+                activeDot={{ r: 6, strokeWidth: 2, stroke: '#3b82f6', fill: 'white' }}
                 name="Volumen Total"
                 isAnimationActive={true}
                 animationDuration={800}
@@ -261,7 +261,7 @@ export function Dashboard() {
 
         {data.length === 0 && !loading && (
           <div className="h-80 flex flex-col items-center justify-center text-gray-400 gap-3">
-            <svg className="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+            <svg className="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5} aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2z" />
             </svg>
             <p className="text-lg font-medium">No hay datos de entrenamiento aún</p>
