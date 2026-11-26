@@ -8,9 +8,11 @@ import { WilksCalculator } from './components/WilksCalculator'
 import { MeetPrep } from './components/MeetPrep'
 import { TeamSports } from './components/TeamSports'
 import { LoginRegister } from './components/LoginRegister'
+import { Home } from './components/Home'
 import { useState } from 'react'
+import { Routes, Route, Navigate, Link } from 'react-router-dom'
 import {
-  Home,
+  Home as HomeIcon,
   Dumbbell,
   BarChart,
   Trophy,
@@ -37,7 +39,7 @@ const NAV_CATEGORIES: NavCategory[] = [
   {
     id: 'main',
     label: 'Principal',
-    icon: Home,
+    icon: HomeIcon,
     views: [
       { id: 'dashboard', label: 'Dashboard', component: Dashboard },
     ],
@@ -88,19 +90,11 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin motion-reduce:animate-none rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-paper flex items-center justify-center">
+        <div className="animate-spin motion-reduce:animate-none rounded-full h-12 w-12 border-b-2 border-accent"></div>
       </div>
     )
   }
-
-  if (!isAuthenticated) {
-    return <LoginRegister />
-  }
-
-  // Encontrar el componente activo
-  const activeViewConfig = NAV_CATEGORIES.flatMap(c => c.views).find(v => v.id === activeView)
-  const ActiveComponent = activeViewConfig?.component || Dashboard
 
   const handleViewChange = (viewId: ViewId) => {
     setActiveView(viewId)
@@ -112,12 +106,68 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <Routes>
+      {/* Public landing page */}
+      <Route path="/" element={<Home />} />
+
+      {/* Auth pages */}
+      <Route path="/login" element={!isAuthenticated ? <LoginRegister /> : <Navigate to="/" replace />} />
+      <Route path="/register" element={!isAuthenticated ? <LoginRegister /> : <Navigate to="/" replace />} />
+
+      {/* Authenticated app */}
+      <Route
+        path="/app/*"
+        element={
+          isAuthenticated ? (
+            <AppLayout
+              user={user}
+              activeView={activeView}
+              openCategory={openCategory}
+              setOpenCategory={setOpenCategory}
+              handleViewChange={handleViewChange}
+              handleCategoryClick={handleCategoryClick}
+              logout={logout}
+            />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+    </Routes>
+  )
+}
+
+// Separate layout component for authenticated app
+function AppLayout({
+  user,
+  activeView,
+  openCategory,
+  setOpenCategory,
+  handleViewChange,
+  handleCategoryClick,
+  logout,
+}: {
+  user: any
+  activeView: ViewId
+  openCategory: string | null
+  setOpenCategory: (categoryId: string | null) => void
+  handleViewChange: (viewId: ViewId) => void
+  handleCategoryClick: (categoryId: string) => void
+  logout: () => void
+}) {
+  // Encontrar el componente activo
+  const activeViewConfig = NAV_CATEGORIES.flatMap(c => c.views).find(v => v.id === activeView)
+  const ActiveComponent = activeViewConfig?.component || Dashboard
+
+  return (
+    <div className="min-h-screen bg-paper">
+      <nav className="bg-paper-2 border-b border-rule sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-bold text-gray-900">Data Based Training</h1>
+              <h1 className="font-display text-display-s font-display text-ink tracking-display">
+                Data Based Training
+              </h1>
             </div>
             <div className="flex items-center space-x-6">
               {/* Navegación por categorías con dropdowns */}
@@ -137,10 +187,10 @@ function App() {
                         <>
                           <button
                             onClick={() => handleCategoryClick(category.id)}
-                            className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            className={`flex items-center space-x-2 px-3 py-2 rounded-card text-sm font-medium transition-colors ${
                               isActive
-                                ? 'bg-blue-50 text-blue-700'
-                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                                ? 'bg-accent text-accent-ink'
+                                : 'text-ink-muted hover:text-ink hover:bg-paper-2'
                             }`}
                             aria-expanded={isOpen}
                             aria-haspopup="true"
@@ -155,46 +205,48 @@ function App() {
 
                           {/* Dropdown menu */}
                           {isOpen && (
-                            <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-20">
+                            <div className="absolute top-full left-0 mt-1 w-48 bg-paper border border-rule rounded-card shadow-lg py-1 z-20">
                               {category.views.map((view) => (
-                                <button
+                                <Link
                                   key={view.id}
+                                  to={`/app/${view.id}`}
                                   onClick={() => handleViewChange(view.id)}
-                                  className={`w-full text-left px-4 py-2 text-sm ${
+                                  className={`block w-full text-left px-4 py-2 text-sm ${
                                     activeView === view.id
-                                      ? 'bg-blue-50 text-blue-700 font-medium'
-                                      : 'text-gray-700 hover:bg-gray-50'
+                                      ? 'bg-accent text-accent-ink font-medium'
+                                      : 'text-ink hover:bg-paper-2'
                                   }`}
                                 >
                                   {view.label}
-                                </button>
+                                </Link>
                               ))}
                             </div>
                           )}
                         </>
                       ) : (
                         // Categorías de una sola vista: botón directo (sin dropdown)
-                        <button
+                        <Link
+                          to={`/app/${category.views[0].id}`}
                           onClick={() => handleViewChange(category.views[0].id)}
-                          className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                          className={`flex items-center space-x-2 px-3 py-2 rounded-card text-sm font-medium transition-colors ${
                             isActive
-                              ? 'bg-blue-50 text-blue-700'
-                              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                              ? 'bg-accent text-accent-ink'
+                              : 'text-ink-muted hover:text-ink hover:bg-paper-2'
                           }`}
                         >
                           <category.icon className="w-5 h-5" aria-hidden="true" />
                           <span>{category.label}</span>
-                        </button>
+                        </Link>
                       )}
                     </div>
                   )
                 })}
               </div>
 
-              <span className="text-sm text-gray-600 hidden sm:block">{user?.email}</span>
+              <span className="font-body text-sm text-ink-muted hidden sm:block">{user?.email}</span>
               <button
                 onClick={logout}
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                className="font-body text-sm text-ink-muted hover:text-ink px-3 py-2 rounded-card font-medium"
               >
                 Cerrar sesión
               </button>
