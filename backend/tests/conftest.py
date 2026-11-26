@@ -1,5 +1,11 @@
 """Configuración global de pytest para tests del backend."""
 
+import os
+os.environ.setdefault("SECRET_KEY", "test-secret-key-for-testing-only")
+os.environ.setdefault("ALGORITHM", "HS256")
+os.environ.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
+os.environ.setdefault("TESTING", "1")  # Desactiva rate limiter en main.py
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine

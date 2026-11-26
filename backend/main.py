@@ -1,12 +1,20 @@
 """Aplicación principal FastAPI."""
 
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 from database import Base, engine
+from rate_limit import limiter
 from routers import analytics, auth, workouts
+
+
+# Solo añadir rate limiter si NO estamos en modo testing
+TESTING = os.getenv("TESTING", "").lower() in ("1", "true", "yes")
 
 
 @asynccontextmanager
@@ -23,6 +31,19 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
+
+# Rate limiter middleware y handler (solo en producción)
+if not TESTING:
+    app.state.limiter = limiter
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+else:
+    # En tests: limiter dummy que no hace nada
+    class DummyLimiter:
+        def limit(self, *args, **kwargs):
+            def decorator(func):
+                return func
+            return decorator
+    app.state.limiter = DummyLimiter()
 
 # CORS middleware - IMPORTANTE: configurar antes de los routers
 app.add_middleware(
