@@ -1,3 +1,6 @@
+/* Hallmark · v2.0.0 · theme: sport (by request) · genre: editorial · crit: critique line */
+@import url('https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@800&family=Albert+Sans:wght@400;500&family=JetBrains+Mono:wght@500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

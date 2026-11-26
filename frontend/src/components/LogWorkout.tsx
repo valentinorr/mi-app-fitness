@@ -151,7 +151,7 @@ export function LogWorkout() {
               <button
                 type="button"
                 onClick={addSet}
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:text-blue-800 transition-colors"
               >
                 + Agregar serie
               </button>
@@ -167,7 +167,7 @@ export function LogWorkout() {
                       value={set.exercise_name}
                       onChange={(e) => updateSet(set.id, 'exercise_name', e.target.value)}
                       placeholder="Ej: Sentadilla, Press banca"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                     />
                   </div>
                   <div>
@@ -178,7 +178,7 @@ export function LogWorkout() {
                       min="0"
                       value={set.weight}
                       onChange={(e) => updateSet(set.id, 'weight', parseFloat(e.target.value) || 0)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                     />
                     {set.weight > 0 && set.reps > 0 && (
                       <div className="mt-1">
@@ -201,7 +201,7 @@ export function LogWorkout() {
                       max="100"
                       value={set.reps}
                       onChange={(e) => updateSet(set.id, 'reps', parseInt(e.target.value) || 0)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                     />
                   </div>
                   <div>
@@ -216,7 +216,7 @@ export function LogWorkout() {
                         const val = e.target.value
                         updateSet(set.id, 'rpe', val ? parseFloat(val) : undefined as unknown as string | number)
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                     />
                   </div>
                   <div className="flex items-end">
@@ -224,7 +224,7 @@ export function LogWorkout() {
                       type="button"
                       onClick={() => removeSet(set.id)}
                       disabled={sets.length <= 1}
-                      className="text-red-500 hover:text-red-700 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="text-red-500 hover:text-red-700 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 active:text-red-800 transition-colors"
                     >
                       Eliminar
                     </button>
@@ -238,7 +238,7 @@ export function LogWorkout() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:bg-blue-800 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-colors transition-transform"
             >
               {submitting ? 'Guardando...' : 'Guardar Entrenamiento'}
             </button>

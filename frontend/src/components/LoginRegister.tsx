@@ -120,7 +120,7 @@ export function LoginRegister() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:bg-blue-800 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-colors transition-transform"
           >
             {loading ? 'Cargando...' : isRegister ? 'Registrarse' : 'Iniciar sesión'}
           </button>
@@ -133,7 +133,7 @@ export function LoginRegister() {
               <button
                 type="button"
                 onClick={handleSwitchMode}
-                className="text-blue-600 hover:text-blue-700 font-medium"
+                className="text-blue-600 hover:text-blue-700 font-medium focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:text-blue-800 transition-colors"
               >
                 Inicia sesión
               </button>
@@ -144,7 +144,7 @@ export function LoginRegister() {
               <button
                 type="button"
                 onClick={handleSwitchMode}
-                className="text-blue-600 hover:text-blue-700 font-medium"
+                className="text-blue-600 hover:text-blue-700 font-medium focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:text-blue-800 transition-colors"
               >
                 Regístrate
               </button>

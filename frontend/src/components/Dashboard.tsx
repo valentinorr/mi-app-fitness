@@ -216,16 +216,16 @@ export function Dashboard() {
         {data.length > 0 && !loading && (
           <ResponsiveContainer width="100%" height={380}>
             <LineChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="4 4" stroke="#f1f5f9" vertical={false} />
+              <CartesianGrid strokeDasharray="4 4" stroke="var(--color-rule)" vertical={false} />
               <XAxis
                 dataKey="week"
-                tick={{ fontSize: 12, fill: '#94a3b8' }}
+                tick={{ fontSize: 12, fill: 'var(--color-ink-muted)' }}
                 axisLine={false}
                 tickLine={false}
                 dy={10}
               />
               <YAxis
-                tick={{ fontSize: 12, fill: '#94a3b8' }}
+                tick={{ fontSize: 12, fill: 'var(--color-ink-muted)' }}
                 axisLine={false}
                 tickLine={false}
                 tickCount={5}
@@ -234,8 +234,8 @@ export function Dashboard() {
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'white',
-                  border: '1px solid #e2e8f0',
+                  backgroundColor: 'var(--color-paper)',
+                  border: '1px solid var(--color-rule)',
                   borderRadius: '10px',
                   boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
                   padding: '12px 16px',
@@ -246,10 +246,10 @@ export function Dashboard() {
               <Line
                 type="monotone"
                 dataKey="volume"
-                stroke="#3b82f6"
+                stroke="var(--color-accent)"
                 strokeWidth={2.5}
                 dot={false}
-                activeDot={{ r: 6, strokeWidth: 2, stroke: '#3b82f6', fill: 'white' }}
+                activeDot={{ r: 6, strokeWidth: 2, stroke: 'var(--color-accent)', fill: 'var(--color-paper)' }}
                 name="Volumen Total"
                 isAnimationActive={true}
                 animationDuration={800}

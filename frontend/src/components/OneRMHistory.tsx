@@ -96,25 +96,25 @@ export function OneRMHistory() {
           <>
             <ResponsiveContainer width="100%" height={400}>
               <LineChart data={filteredData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-rule)" />
                 <XAxis
                   dataKey="created_at"
-                  tick={{ fontSize: 11, fill: '#6b7280' }}
-                  axisLine={{ stroke: '#e5e7eb' }}
-                  tickLine={{ stroke: '#e5e7eb' }}
+                  tick={{ fontSize: 11, fill: 'var(--color-ink-muted)' }}
+                  axisLine={{ stroke: 'var(--color-rule)' }}
+                  tickLine={{ stroke: 'var(--color-rule)' }}
                   tickFormatter={formatDate}
                   interval={0}
                 />
                 <YAxis
-                  tick={{ fontSize: 11, fill: '#6b7280' }}
-                  axisLine={{ stroke: '#e5e7eb' }}
-                  tickLine={{ stroke: '#e5e7eb' }}
-                  label={{ value: '1RM Estimado (kg)', angle: -90, position: 'insideLeft', offset: 10, fill: '#6b7280', fontSize: 11 }}
+                  tick={{ fontSize: 11, fill: 'var(--color-ink-muted)' }}
+                  axisLine={{ stroke: 'var(--color-rule)' }}
+                  tickLine={{ stroke: 'var(--color-rule)' }}
+                  label={{ value: '1RM Estimado (kg)', angle: -90, position: 'insideLeft', offset: 10, fill: 'var(--color-ink-muted)', fontSize: 11 }}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: 'white',
-                    border: '1px solid #e5e7eb',
+                    backgroundColor: 'var(--color-paper)',
+                    border: '1px solid var(--color-rule)',
                     borderRadius: '8px',
                     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                   }}
@@ -130,7 +130,7 @@ export function OneRMHistory() {
                 <Line
                   type="monotone"
                   dataKey="estimated_1rm"
-                  stroke="#3b82f6"
+                  stroke="var(--color-accent)"
                   strokeWidth={2}
                   dot={{ r: 4, strokeWidth: 2, fill: '#3b82f6' }}
                   activeDot={{ r: 6, strokeWidth: 2 }}
