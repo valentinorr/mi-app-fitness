@@ -105,20 +105,16 @@ function App() {
     setOpenCategory(openCategory === categoryId ? null : categoryId)
   }
 
-  return (
-    <Routes>
-      {/* Public landing page */}
-      <Route path="/" element={<Home />} />
-
-      {/* Auth pages */}
-      <Route path="/login" element={!isAuthenticated ? <LoginRegister /> : <Navigate to="/" replace />} />
-      <Route path="/register" element={!isAuthenticated ? <LoginRegister /> : <Navigate to="/" replace />} />
-
-      {/* Authenticated app */}
-      <Route
-        path="/app/*"
-        element={
-          isAuthenticated ? (
+  // Si está autenticado, redirigir / a /app
+  if (isAuthenticated) {
+    return (
+      <Routes>
+        <Route path="/" element={<Navigate to="/app" replace />} />
+        <Route path="/login" element={<Navigate to="/app" replace />} />
+        <Route path="/register" element={<Navigate to="/app" replace />} />
+        <Route
+          path="/app/*"
+          element={
             <AppLayout
               user={user}
               activeView={activeView}
@@ -128,11 +124,20 @@ function App() {
               handleCategoryClick={handleCategoryClick}
               logout={logout}
             />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
-      />
+          }
+        />
+      </Routes>
+    )
+  }
+
+  // No autenticado: mostrar landing y páginas de auth
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<LoginRegister />} />
+      <Route path="/register" element={<LoginRegister />} />
+      {/* Redirigir cualquier ruta /app/* a login si no está autenticado */}
+      <Route path="/app/*" element={<Navigate to="/login" replace />} />
     </Routes>
   )
 }
